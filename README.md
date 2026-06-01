@@ -1,10 +1,6 @@
 # SpaceShooter
+
 ENGLISH
-
-🚀 SPACE SHOOTER — Game Rules
-General Description
-Space Shooter is an arcade game where you control a futuristic cannon and must destroy waves of enemy ships across 5 levels of increasing difficulty. Collect resource bags to protect your cannon with shields and try to achieve the highest score possible.
-
 🚀 SPACE SHOOTER — Game Rules
 General Description
 Space Shooter is an arcade game where you control a futuristic cannon and must destroy waves of enemy ships across 5 levels of increasing difficulty. Collect resource bags to protect your cannon with shields and try to achieve the highest score possible.
