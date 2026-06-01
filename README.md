@@ -1,24 +1,9 @@
 # SpaceShooter
 ENGLISH
-English Translation Matching Romanian Design - Manus
-The translation process is ongoing. I've read the original file and created an English version with the same format, now saving it to a new file.
 
-Traducerea în engleză a fost realizată cu succes, păstrând exact același design și structură ca originalul în română. Fișierul este atașat mai jos.
-translated_content.txt
-Text · 3.92 KB
-View all files in this task
-Task completed
-How was this result?
-Suggested follow-ups
 🚀 SPACE SHOOTER — Game Rules
 General Description
 Space Shooter is an arcade game where you control a futuristic cannon and must destroy waves of enemy ships across 5 levels of increasing difficulty. Collect resource bags to protect your cannon with shields and try to achieve the highest score possible.
-
-
-
-
-GmailGoogle CalendarGoogle Drive
-
 
 🚀 SPACE SHOOTER — Game Rules
 General Description
