@@ -1,0 +1,146 @@
+Creează un joc complet Space Shooter în browser folosind HTML5 Canvas, CSS și JavaScript vanilla (fără librării externe). Jocul trebuie să fie într-un singur fișier index.html sau în 3 fișiere separate: index.html, style.css, game.js.
+
+## STRUCTURA VIZUALĂ
+
+- Canvas principal de joc: 1080×800px
+- Panou lateral dreapta: 260×800px (statistici, clasament, info)
+- Fundal spațial animat: stele care cad (160 stele cu viteze diferite) + 5 nebuloase colorate cu gradient radial
+- Temă dark, culori neon (cyan #00e5ff, verde #44ff88, roșu #ff4455 etc.)
+
+## STĂRI ALE JOCULUI
+
+1. **name** — ecran de autentificare (nume max 16 caractere + parolă max 6 caractere)
+2. **start** — ecran de start cu animație și instrucțiuni
+3. **playing** — joc activ
+4. **paused** — pauză
+5. **shop** — panou scuturi (accesibil din nivelul 3)
+6. **gameover** — ecran game over cu scor și clasament
+7. **win** — ecran victorie
+
+## JUCĂTORUL (TUN)
+
+- Formă futuristă: corp trapezoidal (#0d2a45), două țevi duble în față, aripioare laterale
+- Glow cyan (#00e5ff) cu shadowBlur
+- Mișcare cu accelerație (accel=0.7, friction=0.82, maxSpeed=6)
+- Bara de cooldown tragere sub tun (18 frames cooldown)
+- Scut vizual: cerc animat în jurul tunului când scutul e activ
+- Gloanțe: gradient galben-alb, shadowBlur galben
+
+## INAMICI — 5 TIPURI (câte un tip per rând)
+
+| Rând | Formă | Culoare | Puncte bază |
+|------|-------|---------|-------------|
+| 0 | Disc cu inel exterior | #ff4455 roșu | 10 |
+| 1 | Triunghi cu aripioare laterale | #ff8800 portocaliu | 15 |
+| 2 | Hexagon cu inel interior | #ffdd00 galben | 20 |
+| 3 | Stea cu 4 brațe + nucleu | #44ff88 verde | 25 |
+| 4 | Diamant cu aripi duble | #aa44ff violet | 30 |
+
+Toți inamicii au glow (shadowBlur=14) în culoarea lor.
+
+## CONFIGURAȚIE NIVELE (5 nivele)
+
+| Nivel | Viteză | Interval tragere | DropY | Rânduri | Coloane | Salve |
+|-------|--------|-----------------|-------|---------|---------|-------|
+| 1 | 0.4 | 220 frames | 10 | 2 | 6 | 1 |
+| 2 | 0.7 | 140 frames | 12 | 3 | 8 | 1 |
+| 3 | 1.7 | 70 frames | 18 | 4 | 10 | 2 |
+| 4 | 2.3 | 55 frames | 20 | 5 | 10 | 3 |
+| 5 | 3.0 | 40 frames | 22 | 5 | 11 | 3 |
+
+Inamicii se mișcă lateral, la atingerea peretelui schimbă direcția și coboară cu dropY pixeli. Trag din cel mai de jos inamic din fiecare coloană, aleatoriu, câte shotsPerVolley salve.
+
+## SACI DE RESURSE (cad din cer)
+
+3 tipuri, spawn la interval aleatoriu (200-400 frames):
+- 🥉 **Bronz** (28×28, #cd7f32): cădere dreaptă, oferă Scut Bronz (1 hp)
+- 🥈 **Argint** (32×32, #c0c0c0): cădere dreaptă, oferă Scut Argint (2 hp)
+- 🥇 **Aur** (38×38, #ffd700): mișcare sinusoidală (zig-zag), oferă Scut Aur (3 hp)
+
+Forma sacului: cerc mare + dreptunghi mic deasupra (ca o pungă) + emoji în centru.
+
+## SISTEM SCUTURI
+
+- Scuturile se activează automat în ordine: Bronz → Argint → Aur
+- Când scutul curent e consumat, se activează automat următorul din stoc
+- Culoarea cercului de protecție: maro-auriu (bronz), argintiu (argint), auriu (aur)
+- De la nivelul 3, tasta C deschide panoul de vizualizare stoc
+
+## SISTEM COMBO
+
+- Fereastră combo: 60 frames
+- Dacă distrugi mai multe nave în fereastră: COMBO x2, x3 etc.
+- Bonus = puncte_navă × (multiplicator - 1) adăugate la scor
+- Text animat "COMBO xN +bonus" apare la locul exploziei, se ridică și dispare
+
+## PARTICULE
+
+La fiecare explozie: 14 particule colorate în culoarea inamicului, mișcare radială cu gravitație ușoară (vy += 0.05), durată 28 frames.
+
+## COMENZI
+
+| Tastă | Acțiune |
+|-------|---------|
+| ← → | Mișcă tunul |
+| SPACE | Trage / Start joc |
+| P | Pauză/Reluare |
+| S | Toggle sunet |
+| C | Deschide shop (nivel ≥ 3) |
+| Ctrl+F5 | Reset clasament (admin) |
+
+## SUNET (Web Audio API — procedural, fără fișiere)
+
+6 sunete generate cu oscilatori:
+- **shoot**: square wave, 880→440Hz, 0.08s
+- **explosion**: sawtooth, 220→40Hz, 0.25s
+- **gold**: sine, 660→1320Hz, 0.15s (colectare sac)
+- **hit**: sawtooth, 120→60Hz, 0.35s (lovitură jucător)
+- **pause**: sine, 440Hz, 0.1s
+- **combo**: sine, 880→1760Hz, 0.2s
+
+## CLASAMENT (localStorage)
+
+- Cheie: 'ss_leaderboard', format JSON array
+- Max 10 jucători, sortat descrescător după scor
+- Fiecare entry: { name, score, password, maxLevel }
+- Autentificare: dacă numele există → verifică parola; dacă e nou → creează cont
+- La game over / win: salvează automat scorul dacă e mai mare decât cel existent
+
+## PANOU LATERAL (260px)
+
+Afișează în timp real:
+- Numele jucătorului + nivel curent
+- Scor curent
+- Vieți (icoană ♥ × 3)
+- Stoc scuturi (bronz/argint/aur)
+- Saci colectați (bronz/argint/aur)
+- Clasament top 10 (actualizat live)
+- Indicatori nivel și progres inamici
+
+## ECRANE SPECIALE
+
+**Name screen**: două câmpuri secvențiale (întâi nume, apoi parolă cu *), validare, mesaj eroare parolă greșită.
+
+**Start screen**: animație fade-in, titlu cu glow, instrucțiuni comenzi, top 3 clasament.
+
+**Game Over / Win**: scor final, nivel atins, top clasament, instrucțiune restart (SPACE).
+
+**Shop (C)**: overlay semi-transparent, afișează stocul de saci colectați și scuturile disponibile cu HP, culoare și descriere.
+
+**Pause**: overlay cu text PAUSED centrat.
+
+## FLASH LA HIT
+
+Când jucătorul e lovit fără scut: overlay roșu semi-transparent pe tot canvas-ul, fade-out în 20 frames.
+
+## DETALII TEHNICE
+
+- Game loop cu requestAnimationFrame
+- Detecție coliziuni AABB (rectsOverlap)
+- Inamicii care ajung la linia tunului sunt distruși automat și scad 20 puncte
+- Scorul nu poate fi negativ
+- La trecerea nivelului: reset poziții, spawn inamici noi, păstrează scor/vieți/scuturi/gold
+- La game over: reset complet la ecranul de autentificare (SPACE)
+- Indicatorul sunet 🔊/🔇 în colțul dreapta-sus al canvas-ului principal
+
+Generează codul complet, funcțional, fără placeholder-uri. Toate funcțiile trebuie implementate integral.

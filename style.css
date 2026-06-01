@@ -1,0 +1,28 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+#gameCanvas {
+  display: block;
+  border: 2px solid #1a2a3a;
+}
+
+#sidePanel {
+  display: block;
+  border: 2px solid #1a2a3a;
+  border-left: none;
+  background: #04040f;
+}
